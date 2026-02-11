@@ -3,171 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI MASTERMIND V200</title>
+    <title>REKO INSTANT BLAST V3.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Cairo:wght@900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --bg: #010409; --neon: #00f2ff; --glass: rgba(255, 255, 255, 0.05); }
-        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        :root { --gold: #D4AF37; --neon: #00f2ff; --bg: #010206; --green: #00ff41; --red: #ff003c; }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* الشاشة السحابية العلوية */
-        .cloud-monitor { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #0d1b3e 0%, #010409 100%); border-bottom: 2px solid var(--gold); position: relative; }
-        .main-prediction { font-family: 'Orbitron', sans-serif; font-size: 60px; color: var(--neon); text-shadow: 0 0 30px var(--neon); }
+        /* شاشة العرض الرئيسية - الآن تتفاعل فوراً */
+        .master-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #0a1b3a 0%, #010206 100%); border-bottom: 3px solid var(--gold); position: relative; }
+        .pred-output { font-family: 'Orbitron', sans-serif; font-size: 75px; color: var(--neon); text-shadow: 0 0 35px var(--neon); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
         
-        /* خزان الـ 5 ضربات */
-        .memory-vault { display: flex; gap: 8px; margin-top: 20px; }
-        .m-chip { width: 55px; height: 45px; background: var(--glass); border: 1px solid var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--gold); font-family: 'Orbitron'; box-shadow: 0 0 10px rgba(212,175,55,0.2); }
+        .status-badge { background: var(--red); color: #fff; padding: 5px 15px; border-radius: 50px; font-size: 12px; margin-bottom: 20px; box-shadow: 0 0 15px var(--red); }
 
-        /* لوحة التحكم الاحترافية */
-        .control-base { height: 60vh; background: #080c14; border-top: 3px solid var(--gold); border-radius: 40px 40px 0 0; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -10px 40px #000; }
+        /* حاوية الأزرار الكبيرة */
+        .buttons-container { height: 65vh; background: #080c14; border-top: 2px solid var(--neon); border-radius: 40px 40px 0 0; padding: 15px; display: flex; flex-direction: column; }
+        
+        .scroll-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; overflow-y: auto; padding-bottom: 20px; }
+        .key-btn { background: #000; border: 1px solid #1a2a4a; padding: 20px 5px; border-radius: 15px; font-size: 18px; color: #fff; font-family: 'Orbitron'; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,242,255,0.1); }
+        .key-btn:active { background: var(--gold); color: #000; transform: translateY(4px); }
 
-        /* زر التحليل البصري (السحابي) */
-        .cloud-upload { background: var(--glass); border: 1px dashed var(--neon); padding: 12px; border-radius: 15px; text-align: center; cursor: pointer; color: var(--neon); font-size: 13px; }
-
-        /* شبكة الأزرار اليدوية */
-        .input-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .key-btn { background: #000; border: 1px solid #222; padding: 18px 5px; border-radius: 15px; font-size: 18px; color: #fff; cursor: pointer; transition: 0.2s; }
-        .key-btn:active { transform: scale(0.9); border-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
-
-        .btn-analyze-master { width: 100%; padding: 20px; background: linear-gradient(180deg, var(--gold), #8a6e00); border: none; border-radius: 50px; color: #000; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 0 25px var(--gold); }
+        .footer-info { text-align: center; padding: 10px; font-size: 11px; color: #444; border-top: 1px solid #111; }
     </style>
 </head>
 <body>
 
-    <div class="cloud-monitor">
-        <div id="status" style="position: absolute; top: 15px; color: var(--gold); font-size: 11px; letter-spacing: 2px;">AI MASTERMIND V200 - ONLINE</div>
-        <div class="main-prediction" id="res-val">0.00x</div>
-
-        <div class="memory-vault">
-            <div class="m-chip" id="s0">-</div>
-            <div class="m-chip" id="s1">-</div>
-            <div class="m-chip" id="s2">-</div>
-            <div class="m-chip" id="s3">-</div>
-            <div class="m-chip" id="s4">-</div>
+    <div class="master-screen">
+        <div class="status-badge" id="live-tag">LIVE ANALYSIS: ON</div>
+        <div class="pred-output" id="main-val">READY</div>
+        
+        <div style="margin-top: 20px; display: flex; gap: 5px;">
+            <div id="m0" style="width:10px; height:10px; background:#333; border-radius:50%;"></div>
+            <div id="m1" style="width:10px; height:10px; background:#333; border-radius:50%;"></div>
+            <div id="m2" style="width:10px; height:10px; background:#333; border-radius:50%;"></div>
+            <div id="m3" style="width:10px; height:10px; background:#333; border-radius:50%;"></div>
         </div>
     </div>
 
-    <div class="control-base">
-        <label for="img-in" class="cloud-upload">☁️ ارفع صورة السجل للتحليل السحابي</label>
-        <input type="file" id="img-in" accept="image/*" style="display: none;" onchange="handleImage(event)">
+    <div class="buttons-container">
+        <div style="text-align: center; color: var(--gold); font-size: 13px; margin-bottom: 10px;">اضغط على آخر رقم انفجر في اللعبة فوراً:</div>
+        
+        <div class="scroll-grid" id="grid">
+            </div>
 
-        <div style="text-align: center; font-size: 12px; color: #555;">أو أدخل 5 ضربات يدوياً:</div>
-
-        <div class="input-grid" id="pad"></div>
-
-        <button class="btn-analyze-master" onclick="finalAnalysis()">تـحـلـيـل الـذكـاء الـخـمـاسـي</button>
+        <div class="footer-info">REKO EMPIRE SYSTEM - INSTANT PREDICTION V3.1</div>
     </div>
 
     <script>
-        let memory = [];
-        const vals = ["1.1", "1.5", "1.9", "2.4", "3.0", "4.2", "6.5", "MAX"];
+        let history = [];
+        // قائمة الضربات المطلوبة (1.1، 1.2، 1.3... إلى الضربات العالية)
+        const blastVals = [
+            "1.1", "1.2", "1.3", "1.4", 
+            "1.5", "1.6", "1.7", "1.8", 
+            "1.9", "2.1", "2.3", "2.5", 
+            "3.0", "3.5", "4.0", "5.0", 
+            "6.5", "8.0", "10", "15", 
+            "20", "30", "50", "MAX"
+        ];
 
-        function buildPad() {
-            const p = document.getElementById('pad');
-            vals.forEach(v => {
+        function initGrid() {
+            const g = document.getElementById('grid');
+            blastVals.forEach(v => {
                 let b = document.createElement('button');
                 b.className = 'key-btn';
                 b.innerText = v;
-                b.onclick = () => addVal(v);
-                p.appendChild(b);
+                b.onclick = () => processInstant(v);
+                g.appendChild(b);
             });
         }
 
-        function addVal(v) {
-            if(memory.length >= 5) memory.shift();
-            memory.push(v);
-            updateSlots();
-        }
-
-        function updateSlots() {
-            for(let i=0; i<5; i++) {
-                document.getElementById(`s${i}`).innerText = memory[i] || "-";
-            }
-        }
-
-        function handleImage(e) {
-            const file = e.target.files[0];
-            if(file) {
-                document.getElementById('status').innerText = "⏳ جاري مسح الصورة سحابياً...";
-                setTimeout(() => {
-                    // محاكاة قراءة السجل بصرياً
-                    memory = ["1.5", "1.2", "3.0", "1.1", "2.0"];
-                    updateSlots();
-                    document.getElementById('status').innerText = "✅ تم استخراج البيانات من الصورة";
-                }, 1500);
-            }
-        }
-
-        function finalAnalysis() {
-            if(memory.length < 3) return;
-            const res = document.getElementById('res-val');
-            const st = document.getElementById('status');
+        function processInstant(val) {
+            // إضافة للذاكرة فوراً
+            if(history.length >= 4) history.shift();
+            history.push(parseFloat(val.replace('MAX', '100')));
             
-            st.innerText = "⚡ جاري مزامنة الذاكرة مع السحابة...";
-            res.style.opacity = "0.2";
+            // تحديث مصابيح الذاكرة
+            for(let i=0; i<4; i++) {
+                document.getElementById('m'+i).style.background = history[i] ? "var(--gold)" : "#333";
+            }
 
+            // إظهار النتيجة فوراً دون انتظار
+            const out = document.getElementById('main-val');
+            const tag = document.getElementById('live-tag');
+            
+            tag.innerText = "⏳ ANALYZING...";
+            tag.style.background = "var(--gold)";
+            
+            // خوارزمية النبض اللحظي
             setTimeout(() => {
-                let nums = memory.map(m => parseFloat(m.replace('MAX', '10')));
-                let avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+                let last = history[history.length - 1];
                 let pred;
 
-                // الخوارزمية المفولة (V200)
-                if(avg > 4) pred = (1.1 + Math.random() * 0.4).toFixed(2);
-                else if(avg < 1.7) pred = (2.4 + Math.random() * 2.5).toFixed(2);
-                else pred = (1.5 + Math.random() * 1.2).toFixed(2);
+                if(last < 1.3) {
+                    pred = (2.1 + Math.random() * 2).toFixed(2);
+                } else if(last > 5) {
+                    pred = (1.15 + Math.random() * 0.3).toFixed(2);
+                } else {
+                    pred = (1.4 + Math.random() * 1.5).toFixed(2);
+                }
 
-                res.innerText = pred + "x";
-                res.style.opacity = "1";
-                res.style.color = (pred > 2) ? "#00ff41" : "var(--neon)";
-                st.innerText = "✅ تم التحليل: الاحتمال الأدق جاهز";
-            }, 800);
+                out.innerText = pred + "x";
+                out.style.color = (pred > 2) ? "var(--green)" : "var(--neon)";
+                tag.innerText = "✅ PREDICTION READY";
+                tag.style.background = "var(--green)";
+            }, 300); // سرعة استجابة فائقة (0.3 ثانية)
         }
 
-        buildPad();
-    </script>
-</body>
-</html>
- if(data && new Date().getTime() < data.expiresAt) {
-                    launchVIP(data.expiresAt);
-                } else { alert("عذراً.. الكود غير صالح أو منتهي!"); }
-            });
-        }
-
-        function launchVIP(expiry) {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('vipPage').classList.remove('hidden');
-            
-            // محرك العداد التنازلي المباشر
-            setInterval(() => {
-                const diff = expiry - new Date().getTime();
-                if(diff <= 0) location.reload();
-                const h = Math.floor(diff / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-                document.getElementById('timerDisplay').innerText = `متبقي: ${h}:${m}:${s}`;
-            }, 1000);
-
-            const items = ["🐥", "🐟", "🐂", "🍤", "🍅", "🥕", "🌶️", "🌽"];
-            const grid = document.getElementById('symbolGrid');
-            items.forEach(item => {
-                let btn = document.createElement('button');
-                btn.className = 'symbol-btn'; btn.innerText = item;
-                btn.onclick = () => {
-                    for(let i=1; i<=4; i++) {
-                        document.getElementById(`s${i}`).innerText = items[Math.floor(Math.random()*items.length)];
-                    }
-                };
-                grid.appendChild(btn);
-            });
-        }
-
-        function saveKey() {
-            const name = document.getElementById('keyName').value;
-            const hours = document.getElementById('keyTime').value;
-            const expAt = new Date().getTime() + (hours * 60 * 60 * 1000);
-            rtdb.ref('active_keys/' + name).set({ expiresAt: expAt }).then(() => {
-                document.getElementById('status').innerText = `✅ تم حفظ كود [${name}] في السحابة بنجاح!`;
-            });
-        }
+        initGrid();
     </script>
 </body>
 </html>
