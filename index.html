@@ -2,128 +2,107 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REKO CRASH V7.5 - CONFIDENCE PRO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Cairo:wght@900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REKO EMPIRE V56</title>
     <style>
-        :root { --gold: #D4AF37; --cyan: #00f2ff; --bg: #010206; --green: #00ff41; --red: #ff003c; --gray: #222; }
-        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        :root { --gold: #D4AF37; --cyan: #00f2ff; --green: #00ff41; --red: #ff3e3e; --bg: #010206; }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 10px; text-align: center; }
 
-        /* شاشة الرادار والمؤشر */
-        .master-display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #0a1b3a 0%, #010206 100%); border-bottom: 2px solid var(--gold); position: relative; }
-        .prediction-val { font-family: 'Orbitron', sans-serif; font-size: 75px; color: var(--cyan); text-shadow: 0 0 35px var(--cyan); }
+        .header { color: var(--cyan); font-size: 10px; border: 1px solid #1a2a4a; padding: 5px; margin-bottom: 15px; border-radius: 5px; letter-spacing: 1px; }
+
+        /* 1. خانات الأهداف العلوية (4 خانات - يضوي منها هدفين) */
+        .target-radar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .t-slot { 
+            background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 12px;
+            height: 55px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px;
+            transition: 0.5s; position: relative;
+        }
+        /* تأثير الهدف الأساسي المشتعل */
+        .t-slot.core-active { background: linear-gradient(90deg, #0a1428, #002200); border: 2px solid var(--green); box-shadow: 0 0 15px var(--green); transform: scale(1.02); }
+        .t-slot.core-active::after { content: "هدف أساسي 🎯"; position: absolute; left: 15px; top: 2px; font-size: 8px; color: var(--green); font-weight: bold; }
         
-        /* مؤشر الثقة الذكي */
-        .confidence-meter { margin-top: 10px; width: 200px; text-align: center; }
-        .meter-bar { height: 6px; width: 100%; background: var(--gray); border-radius: 10px; overflow: hidden; margin-top: 5px; }
-        #fill { height: 100%; width: 0%; background: var(--green); transition: 0.8s ease-in-out; }
-        #conf-text { font-family: 'Orbitron'; font-size: 14px; color: var(--gold); }
+        .t-icon { font-size: 28px; opacity: 0.1; transition: 0.5s; }
+        .core-active .t-icon { opacity: 1; filter: drop-shadow(0 0 8px var(--green)); }
+        .t-name { font-weight: bold; color: #444; }
+        .core-active .t-name { color: #fff; }
 
-        /* الحقول الأربعة */
-        .fields-row { display: flex; gap: 10px; margin-top: 20px; }
-        .f-node { width: 60px; height: 45px; background: rgba(0,0,0,0.7); border: 2px solid var(--gray); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff; font-family: 'Orbitron'; transition: 0.3s; }
-        .f-node.filled { border-color: var(--gold); box-shadow: 0 0 10px rgba(212,175,55,0.3); }
+        /* 2. سجل الماضي (4 خانات تسجيل ما حصل) */
+        .history-section { background: rgba(0,242,255,0.03); border: 1px solid var(--gold); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
+        .h-title { font-size: 10px; color: var(--gold); margin-bottom: 8px; }
+        .h-grid { display: flex; justify-content: center; gap: 10px; }
+        .h-node { width: 50px; height: 45px; background: #000; border: 1px solid var(--cyan); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
-        /* لوحة التحكم */
-        .cockpit { height: 50vh; background: #050a14; border-top: 3px solid var(--gold); border-radius: 40px 40px 0 0; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; }
-        .grid-pad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .p-btn { background: #000; border: 1px solid #1a2a4a; padding: 18px 5px; border-radius: 15px; font-size: 20px; color: #fff; font-family: 'Orbitron'; cursor: pointer; }
-        .p-btn:active { transform: scale(0.9); background: var(--gold); color: #000; }
+        /* 3. لوحة الرموز الثمانية */
+        .keys-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .k-btn { background: #0a1428; border: 1px solid var(--gold); border-radius: 12px; padding: 15px 0; font-size: 26px; cursor: pointer; }
 
-        .btn-launch-ai { width: 100%; padding: 18px; background: linear-gradient(180deg, var(--gold), #8a6e00); border: none; border-radius: 50px; color: #000; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px var(--gold); }
+        .btn-analyze { background: linear-gradient(to bottom, var(--gold), #8a6e00); border: none; padding: 18px; border-radius: 50px; width: 100%; color: #000; font-weight: bold; font-size: 20px; margin-top: 20px; cursor: pointer; box-shadow: 0 0 20px var(--gold); }
     </style>
 </head>
 <body>
 
-    <div class="master-display">
-        <div style="position: absolute; top: 15px; color: #444; font-size: 9px; letter-spacing: 2px;">V7.5 - CONFIDENCE RATIO ENGINE</div>
-        <div class="prediction-val" id="out-x">READY</div>
-        
-        <div class="confidence-meter">
-            <div id="conf-text">CONFIDENCE: 0%</div>
-            <div class="meter-bar"><div id="fill"></div></div>
-        </div>
+    <div class="header">SYSTEM STATUS: REKO EMPIRE V56 ACTIVE</div>
 
-        <div class="fields-row" id="nodes">
-            <div class="f-node">-</div><div class="f-node">-</div>
-            <div class="f-node">-</div><div class="f-node">-</div>
+    <div class="target-radar">
+        <div class="t-slot" id="s1"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 1</span><span class="t-name" id="n1">---</span><div class="t-icon" id="i1">⏳</div></div>
+        <div class="t-slot" id="s2"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 2</span><span class="t-name" id="n2">---</span><div class="t-icon" id="i2">⏳</div></div>
+        <div class="t-slot" id="s3"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 3</span><span class="t-name" id="n3">---</span><div class="t-icon" id="i3">⏳</div></div>
+        <div class="t-slot" id="s4"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 4</span><span class="t-name" id="n4">---</span><div class="t-icon" id="i4">⏳</div></div>
+    </div>
+
+    <div class="history-section">
+        <div class="h-title">سجل ما حصل في الماضي (Last 4)</div>
+        <div class="h-grid" id="h-row">
+            <div class="h-node">-</div><div class="h-node">-</div>
+            <div class="h-node">-</div><div class="h-node">-</div>
         </div>
     </div>
 
-    <div class="cockpit">
-        <div id="status" style="text-align: center; font-size: 11px; color: var(--gold);">تغذية الحقول الأربعة مطلوبة...</div>
-        
-        <div class="grid-pad" id="pad"></div>
-
-        <button class="btn-launch-ai" onclick="runConfidenceAI()">تفعيل المحرك + كشف الثقة</button>
+    <div class="keys-grid">
+        <button class="k-btn" onclick="add('🐥')">🐥</button><button class="k-btn" onclick="add('🍅')">🍅</button>
+        <button class="k-btn" onclick="add('🐂')">🐂</button><button class="k-btn" onclick="add('🌶️')">🌶️</button>
+        <button class="k-btn" onclick="add('🍤')">🍤</button><button class="k-btn" onclick="add('🥕')">🥕</button>
+        <button class="k-btn" onclick="add('🐟')">🐟</button><button class="k-btn" onclick="add('🌽')">🌽</button>
     </div>
+
+    <button class="btn-analyze" onclick="run()">تحليل الهدف الأساسي</button>
 
     <script>
-        let history = [];
-        const blastKeys = ["1.1", "1.5", "2.0", "3.1", "4.8", "6.2", "10", "MAX"];
+        let past = [];
+        const names = {'🐥':'كتكوت','🍅':'طماطم','🐂':'بقر','🌶️':'فلفل','🍤':'جمبري','🥕':'جزر','🐟':'سمك','🌽':'ذرة'};
 
-        function build() {
-            const p = document.getElementById('pad');
-            blastKeys.forEach(v => {
-                let b = document.createElement('button');
-                b.className = 'p-btn'; b.innerText = v;
-                b.onclick = () => { if(history.length >= 4) history.shift(); history.push(v); updateUI(); };
-                p.appendChild(b);
-            });
+        function add(s) {
+            if(past.length >= 4) past.shift();
+            past.push(s);
+            const nodes = document.getElementById('h-row').children;
+            for(let i=0; i<4; i++) nodes[i].innerText = past[i] || "-";
         }
 
-        function updateUI() {
-            const nodes = document.getElementById('nodes').children;
-            for(let i=0; i<4; i++) {
-                nodes[i].innerText = history[i] || "-";
-                nodes[i].className = history[i] ? "f-node filled" : "f-node";
-            }
-        }
-
-        function runConfidenceAI() {
-            if(history.length < 4) { alert("أكمل الحقول الأربعة يا إمبراطور"); return; }
+        function run() {
+            if(past.length < 4) { alert("سجل الماضي غير مكتمل!"); return; }
             
-            const out = document.getElementById('out-x');
-            const fill = document.getElementById('fill');
-            const confT = document.getElementById('conf-text');
-            const st = document.getElementById('status');
-
-            st.innerText = "⏳ جاري حساب التوافق مع السيرفر...";
-            out.style.opacity = "0.2";
-            fill.style.width = "0%";
+            // تصفير الخانات العلوية
+            for(let i=1; i<=4; i++) {
+                document.getElementById('s'+i).classList.remove('core-active');
+            }
 
             setTimeout(() => {
-                let nums = history.map(h => parseFloat(h.replace('MAX', '15')));
-                let avg = nums.reduce((a, b) => a + b, 0) / 4;
-                let last = nums[3];
-                let prediction, confidence;
-
-                // حساب التوقع والثقة بناءً على أشهر المحركات
-                if (last < 1.3) {
-                    prediction = (avg * 1.5 + Math.random()).toFixed(2);
-                    confidence = Math.floor(85 + Math.random() * 10); // ثقة عالية عند التعويض
-                } else if (last > 5) {
-                    prediction = (1.15 + Math.random() * 0.3).toFixed(2);
-                    confidence = Math.floor(90 + Math.random() * 8); // ثقة عالية في سحب السيولة
-                } else {
-                    prediction = (avg * 0.9 + Math.random()).toFixed(2);
-                    confidence = Math.floor(60 + Math.random() * 20); // ثقة متوسطة في الاستقرار
-                }
-
-                out.innerText = prediction + "x";
-                out.style.opacity = "1";
-                out.style.color = (prediction > 2) ? "var(--green)" : "var(--cyan)";
+                const keys = Object.keys(names);
+                // اختيار 4 خيارات من العجلة
+                let selected = keys.sort(() => 0.5 - Math.random()).slice(0, 4);
                 
-                // تحديث المؤشر
-                confT.innerText = `CONFIDENCE: ${confidence}%`;
-                fill.style.width = `${confidence}%`;
-                fill.style.background = (confidence > 80) ? "var(--green)" : (confidence > 60) ? "var(--gold)" : "var(--red)";
-                
-                st.innerText = "✅ تم استخراج الاحتمال بنسبة ثقة دقيقة";
-            }, 800);
+                selected.forEach((sym, index) => {
+                    let i = index + 1;
+                    document.getElementById('n'+i).innerText = names[sym];
+                    document.getElementById('i'+i).innerText = sym;
+                });
+
+                // تفعيل "هدفين أساسيين" (مثلاً الهدف 1 والهدف 3)
+                document.getElementById('s1').classList.add('core-active');
+                document.getElementById('s3').classList.add('core-active');
+            }, 600);
         }
-
-        build();
     </script>
 </body>
 </html>
+
