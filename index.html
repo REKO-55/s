@@ -3,69 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REKO EMPIRE V56 - PRO</title>
+    <title>REKO EMPIRE V56 - VIP MAX</title>
     <style>
-        :root { --gold: #D4AF37; --cyan: #00f2ff; --green: #00ff41; --red: #ff3e3e; --bg: #010206; }
-        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 10px; text-align: center; }
+        :root { 
+            --gold: #FFD700; 
+            --cyan: #00E5FF; 
+            --green: #00FF33; 
+            --red: #FF003C; 
+            --dark: #05050A;
+            --panel: #0D111A;
+        }
+        
+        body { background: var(--dark); color: #fff; font-family: 'Tahoma', sans-serif; margin: 0; padding: 10px; text-align: center; user-select: none; -webkit-user-select: none; overflow-x: hidden; }
+
+        /* بصمة المبرمج فخامه */
+        .programmer-tag {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--gold), 0 0 30px #ffaa00;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { text-shadow: 0 0 10px var(--gold); }
+            50% { text-shadow: 0 0 25px var(--gold), 0 0 40px #fff; }
+            100% { text-shadow: 0 0 10px var(--gold); }
+        }
 
         /* شاشة تسجيل الدخول */
         #login-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 85vh; }
-        .login-box { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--cyan); border-radius: 15px; padding: 30px; width: 80%; max-width: 350px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
-        .login-title { color: var(--gold); margin-bottom: 5px; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px var(--gold); }
-        .login-desc { color: var(--cyan); font-size: 11px; margin-bottom: 20px; }
-        .sub-input { padding: 15px; border-radius: 10px; border: 1px solid var(--cyan); background: #0a1428; color: var(--gold); width: 85%; margin-bottom: 15px; text-align: center; font-size: 16px; font-weight: bold; outline: none; }
-        .btn-login { background: linear-gradient(to bottom, var(--gold), #8a6e00); border: none; padding: 15px 30px; border-radius: 10px; color: #000; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 0 10px var(--gold); font-size: 16px; }
-        .error-msg { color: var(--red); display: none; margin-top: 15px; font-size: 13px; font-weight: bold; }
+        .login-box { background: var(--panel); border: 2px solid var(--cyan); border-radius: 15px; padding: 30px; width: 85%; max-width: 380px; box-shadow: 0 0 30px rgba(0, 229, 255, 0.3); position: relative; overflow: hidden; }
+        .login-box::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, var(--cyan), transparent 30%); animation: rotate 3s linear infinite; z-index: -1; opacity: 0.2; }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        
+        .login-title { color: var(--gold); margin-bottom: 5px; font-size: 26px; font-weight: bold; text-shadow: 0 0 15px var(--gold); }
+        .device-id { color: #00E5FF; font-size: 11px; margin-bottom: 20px; font-family: monospace; background: #000; padding: 5px; border-radius: 5px;}
+        .sub-input { padding: 15px; border-radius: 10px; border: 1px solid var(--cyan); background: #05050A; color: var(--gold); width: 85%; margin-bottom: 15px; text-align: center; font-size: 16px; font-weight: bold; outline: none; transition: 0.3s;}
+        .sub-input:focus { box-shadow: 0 0 15px var(--cyan); }
+        .btn-login { background: linear-gradient(45deg, var(--gold), #b38600); border: none; padding: 15px 30px; border-radius: 10px; color: #000; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 0 15px var(--gold); font-size: 18px; text-transform: uppercase;}
+        .error-msg { color: var(--red); display: none; margin-top: 15px; font-size: 14px; font-weight: bold; text-shadow: 0 0 5px var(--red);}
 
         /* واجهة البرنامج الأصلية */
-        #app-container { display: none; }
-        .header { color: var(--cyan); font-size: 11px; border: 1px solid #1a2a4a; padding: 8px; margin-bottom: 15px; border-radius: 5px; letter-spacing: 1px; font-weight: bold; background: rgba(0,0,0,0.5); }
+        #app-container { display: none; max-width: 450px; margin: auto; }
+        .header { background: linear-gradient(180deg, #111, #000); border: 1px solid var(--cyan); padding: 15px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,229,255,0.2); position: relative;}
+        
+        .geo-ping { position: absolute; top: 10px; left: 10px; font-size: 9px; color: var(--cyan); font-family: monospace; text-align: left;}
+        
+        .status-title { color: var(--green); font-size: 14px; font-weight: bold; margin-bottom: 8px; letter-spacing: 2px; text-shadow: 0 0 10px var(--green);}
+        .timer-box { font-family: monospace; color: var(--gold); font-size: 18px; background: #000; padding: 8px; border-radius: 5px; border: 1px solid var(--gold); letter-spacing: 2px;}
 
-        .target-radar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        .t-slot { background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 12px; height: 55px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; transition: 0.5s; position: relative; }
-        .t-slot.core-active { background: linear-gradient(90deg, #0a1428, #002200); border: 2px solid var(--green); box-shadow: 0 0 15px var(--green); transform: scale(1.02); }
-        .t-slot.core-active::after { content: "هدف أساسي 🎯"; position: absolute; left: 15px; top: 2px; font-size: 8px; color: var(--green); font-weight: bold; }
-        .t-icon { font-size: 28px; opacity: 0.1; transition: 0.5s; }
-        .core-active .t-icon { opacity: 1; filter: drop-shadow(0 0 8px var(--green)); }
-        .t-name { font-weight: bold; color: #444; }
-        .core-active .t-name { color: #fff; }
+        /* الرادار المتقدم (4 محركات) */
+        .target-radar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .t-slot { background: var(--panel); border: 1px solid #333; border-radius: 12px; height: 65px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; transition: 0.5s; position: relative; overflow: hidden;}
+        
+        .engine-badge { position: absolute; right: 10px; top: 5px; font-size: 9px; background: #222; padding: 2px 8px; border-radius: 4px; color: var(--cyan); font-weight: bold; border: 1px solid #444;}
+        .confidence-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--green); width: 0%; transition: 1s ease-in-out;}
+        
+        .t-slot.core-active { background: linear-gradient(90deg, #0a1428, #001a00); border: 1px solid var(--green); box-shadow: inset 0 0 20px rgba(0, 255, 51, 0.2), 0 0 10px var(--green); }
+        .t-icon { font-size: 32px; filter: grayscale(100%); opacity: 0.3; transition: 0.5s; }
+        .core-active .t-icon { filter: grayscale(0%); opacity: 1; filter: drop-shadow(0 0 10px var(--gold)); transform: scale(1.1);}
+        
+        .t-info { display: flex; flex-direction: column; align-items: flex-start; margin-right: 15px;}
+        .t-name { font-weight: bold; color: #555; font-size: 16px;}
+        .t-percent { font-size: 11px; color: var(--green); display: none;}
+        .core-active .t-name { color: #fff; text-shadow: 0 0 5px #fff;}
+        .core-active .t-percent { display: block; }
 
-        .history-section { background: rgba(0,242,255,0.03); border: 1px solid var(--gold); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
-        .h-title { font-size: 10px; color: var(--gold); margin-bottom: 8px; }
-        .h-grid { display: flex; justify-content: center; gap: 10px; }
-        .h-node { width: 50px; height: 45px; background: #000; border: 1px solid var(--cyan); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        /* سجل التاريخ */
+        .history-section { background: rgba(0,229,255,0.05); border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.1);}
+        .h-title { font-size: 12px; color: var(--gold); margin-bottom: 12px; font-weight: bold;}
+        .h-grid { display: flex; justify-content: center; gap: 15px; }
+        .h-node { width: 55px; height: 50px; background: #000; border: 2px solid var(--cyan); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 0 10px rgba(0,229,255,0.2);}
 
-        .keys-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .k-btn { background: #0a1428; border: 1px solid var(--gold); border-radius: 12px; padding: 15px 0; font-size: 26px; cursor: pointer; transition: 0.2s; }
-        .k-btn:active { transform: scale(0.95); background: var(--gold); }
+        /* لوحة المفاتيح */
+        .keys-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 10px;}
+        .k-btn { background: var(--panel); border: 1px solid #444; border-radius: 15px; padding: 15px 0; font-size: 28px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5);}
+        .k-btn:active { transform: scale(0.90); background: var(--gold); border-color: #fff;}
 
-        .btn-analyze { background: linear-gradient(to bottom, var(--gold), #8a6e00); border: none; padding: 18px; border-radius: 50px; width: 100%; color: #000; font-weight: bold; font-size: 20px; margin-top: 20px; cursor: pointer; box-shadow: 0 0 20px var(--gold); }
+        .btn-analyze { background: linear-gradient(90deg, #ff003c, #8a0000); border: 2px solid #ff4d4d; padding: 20px; border-radius: 50px; width: 95%; color: #fff; font-weight: 900; font-size: 22px; margin-top: 15px; cursor: pointer; box-shadow: 0 0 25px rgba(255, 0, 60, 0.6); transition: 0.3s; text-transform: uppercase; letter-spacing: 2px;}
+        .btn-analyze:active { transform: scale(0.98); background: var(--green); border-color: #fff; box-shadow: 0 0 30px var(--green);}
+        
+        /* شاشة التحميل (Hacking) */
+        #hacking-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; flex-direction: column; align-items: center; justify-content: center; color: var(--green); font-family: monospace; font-size: 18px;}
     </style>
 </head>
 <body>
 
+    <div class="programmer-tag">👑 المبرمج فخامه 👑</div>
+
     <div id="login-container">
         <div class="login-box">
-            <div class="login-title">REKO EMPIRE</div>
-            <div class="login-desc">نظام VIP | يرجى إدخال مفتاح التفعيل</div>
-            <input type="text" id="sub-key" class="sub-input" placeholder="أدخل المفتاح هنا...">
-            <button class="btn-login" onclick="verifyKey()">تفعيل الاشتراك (10 أيام)</button>
-            <div id="login-error" class="error-msg">❌ المفتاح غير صحيح أو منتهي!</div>
+            <div class="login-title">REKO VIP CORE</div>
+            <div id="device-id-display" class="device-id">DEVICE ID: GENERATING...</div>
+            <input type="text" id="sub-key" class="sub-input" placeholder="أدخل مفتاح التفعيل (VIP)...">
+            <button class="btn-login" onclick="verifyKey()">تفعيل الرادار والمحركات</button>
+            <div id="login-error" class="error-msg">❌ التشفير مرفوض! المفتاح غير صالح.</div>
         </div>
     </div>
 
+    <div id="hacking-screen">
+        <h2 style="color: var(--cyan);">Bypassing Server...</h2>
+        <p id="hack-log">Applying 60/40 Ratio Protocol...</p>
+    </div>
+
     <div id="app-container">
-        <div class="header" id="header-status">SYSTEM STATUS: CHECKING...</div>
+        <div class="header">
+            <div class="geo-ping">SERVER: AMARAH-MAYSAN<br>PING: 18ms (STABLE)</div>
+            <div class="status-title">🟢 VIP ENGINES ONLINE</div>
+            <div class="timer-box" id="countdown-timer">00d : 00h : 00m : 00s</div>
+        </div>
 
         <div class="target-radar">
-            <div class="t-slot" id="s1"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 1</span><span class="t-name" id="n1">---</span><div class="t-icon" id="i1">⏳</div></div>
-            <div class="t-slot" id="s2"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 2</span><span class="t-name" id="n2">---</span><div class="t-icon" id="i2">⏳</div></div>
-            <div class="t-slot" id="s3"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-weight:bold">هدف 3</span><span class="t-name" id="n3">---</span><div class="t-icon" id="i3">⏳</div></div>
-            <div class="t-slot" id="s4"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 4</span><span class="t-name" id="n4">---</span><div class="t-icon" id="i4">⏳</div></div>
+            <div class="t-slot" id="s1">
+                <div class="engine-badge">المحرك الإحصائي 📊</div>
+                <div class="t-info"><span class="t-name" id="n1">---</span><span class="t-percent" id="p1">الثقة: 0%</span></div>
+                <div class="t-icon" id="i1">⏳</div>
+                <div class="confidence-bar" id="b1"></div>
+            </div>
+            <div class="t-slot" id="s2">
+                <div class="engine-badge">أنماط ماركوف 🔗</div>
+                <div class="t-info"><span class="t-name" id="n2">---</span><span class="t-percent" id="p2">الثقة: 0%</span></div>
+                <div class="t-icon" id="i2">⏳</div>
+                <div class="confidence-bar" id="b2"></div>
+            </div>
+            <div class="t-slot" id="s3">
+                <div class="engine-badge">كشف الفخاخ (نباتات) 🪤</div>
+                <div class="t-info"><span class="t-name" id="n3">---</span><span class="t-percent" id="p3">الثقة: 0%</span></div>
+                <div class="t-icon" id="i3">⏳</div>
+                <div class="confidence-bar" id="b3"></div>
+            </div>
+            <div class="t-slot" id="s4">
+                <div class="engine-badge">الذكاء العميق (AI) 🧠</div>
+                <div class="t-info"><span class="t-name" id="n4">---</span><span class="t-percent" id="p4">الثقة: 0%</span></div>
+                <div class="t-icon" id="i4">⏳</div>
+                <div class="confidence-bar" id="b4"></div>
+            </div>
         </div>
 
         <div class="history-section">
-            <div class="h-title">سجل ما حصل في الماضي (Last 4)</div>
+            <div class="h-title">أدخل آخر 4 نتائج لتشغيل الفلتر النباتي</div>
             <div class="h-grid" id="h-row">
                 <div class="h-node">-</div><div class="h-node">-</div>
                 <div class="h-node">-</div><div class="h-node">-</div>
@@ -79,95 +160,155 @@
             <button class="k-btn" onclick="add('🐟')">🐟</button><button class="k-btn" onclick="add('🌽')">🌽</button>
         </div>
 
-        <button class="btn-analyze" onclick="run()">تحليل الهدف الأساسي</button>
+        <button class="btn-analyze" onclick="runAllEngines()">🔥 إطلاق التحليل المتوازن 🔥</button>
     </div>
 
     <script>
-        // === 1. نظام الحماية والاشتراكات ===
-        // يمكنك تغيير هذه المفاتيح لأي كلمات تريدها
-        const validKeys = [
-            "REKO-10D-K1", "REKO-10D-K2", "REKO-10D-K3", "REKO-10D-K4", "REKO-10D-K5",
-            "REKO-10D-K6", "REKO-10D-K7", "REKO-10D-K8", "REKO-10D-K9", "REKO-10D-K10"
-        ];
-        const DURATION_DAYS = 10;
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', event => {
+            if (event.keyCode === 123 || (event.ctrlKey && event.shiftKey && event.keyCode === 73) || (event.ctrlKey && event.keyCode === 85)) {
+                event.preventDefault();
+            }
+        });
+
+        let deviceID = localStorage.getItem('reko_device_id');
+        if (!deviceID) { deviceID = 'SYS-' + Math.random().toString(36).substr(2, 8).toUpperCase(); localStorage.setItem('reko_device_id', deviceID); }
+        document.getElementById('device-id-display').innerText = "DEVICE ID: " + deviceID;
+
+        const validKeys = ["فخامه-1", "VIP-REKO-1", "123456"];
+        let countdownInterval;
+
+        function updateTimer(expireDate) {
+            const distance = expireDate - new Date().getTime();
+            if (distance < 0) {
+                clearInterval(countdownInterval); localStorage.clear();
+                alert("⚠️ انتهى اشتراكك يا إمبراطور!"); location.reload(); return;
+            }
+            const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById('countdown-timer').innerText = `${d}d : ${h<10?'0'+h:h}h : ${m<10?'0'+m:m}m : ${s<10?'0'+s:s}s`;
+        }
 
         function checkSubscription() {
             const savedKey = localStorage.getItem('reko_key');
             const expireDate = localStorage.getItem('reko_expire');
-
-            if (savedKey && expireDate) {
-                const now = new Date().getTime();
-                if (now < expireDate) {
-                    // الاشتراك ساري
-                    const daysLeft = Math.ceil((expireDate - now) / (1000 * 60 * 60 * 24));
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('app-container').style.display = 'block';
-                    document.getElementById('header-status').innerText = `SYSTEM ACTIVE | باقي لاشتراكك: ${daysLeft} يوم`;
-                    return;
-                } else {
-                    // الاشتراك انتهى
-                    localStorage.removeItem('reko_key');
-                    localStorage.removeItem('reko_expire');
-                    alert("⚠️ انتهت صلاحية اشتراكك (10 أيام). يرجى شراء مفتاح جديد.");
-                }
+            if (savedKey && expireDate && new Date().getTime() < expireDate) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                updateTimer(expireDate); countdownInterval = setInterval(() => updateTimer(expireDate), 1000);
             }
-            // إظهار شاشة الدخول إذا لم يكن هناك اشتراك
-            document.getElementById('login-container').style.display = 'flex';
-            document.getElementById('app-container').style.display = 'none';
         }
 
         function verifyKey() {
             const input = document.getElementById('sub-key').value.trim();
-            const errorMsg = document.getElementById('login-error');
-
             if (validKeys.includes(input)) {
-                // تفعيل المفتاح لمدة 10 أيام
-                const expireDate = new Date().getTime() + (DURATION_DAYS * 24 * 60 * 60 * 1000);
-                localStorage.setItem('reko_key', input);
-                localStorage.setItem('reko_expire', expireDate);
-                errorMsg.style.display = 'none';
-                checkSubscription(); // تحديث الواجهة
-            } else {
-                errorMsg.style.display = 'block';
-            }
+                const expireDate = new Date().getTime() + (10 * 24 * 60 * 60 * 1000);
+                localStorage.setItem('reko_key', input); localStorage.setItem('reko_expire', expireDate);
+                document.getElementById('login-error').style.display = 'none'; checkSubscription();
+            } else { document.getElementById('login-error').style.display = 'block'; }
         }
-
-        // تشغيل فحص الحماية عند فتح الصفحة
         window.onload = checkSubscription;
 
-        // === 2. نظام التحليل الخاص باللعبة ===
+        // ==========================================
+        // 🔥 محركات التحليل (النسبة 60% نبات - 40% حيوان) 🔥
+        // ==========================================
         let past = [];
-        const names = {'🐥':'كتكوت','🍅':'طماطم','🐂':'بقر','🌶️':'فلفل','🍤':'جمبري','🥕':'جزر','🐟':'سمك','🌽':'ذرة'};
+        const itemData = {
+            '🐥': { name: 'كتكوت (حيوان)', type: 'A' }, '🍅': { name: 'طماطم (نبات)', type: 'P' },
+            '🐂': { name: 'بقر (حيوان)', type: 'A' }, '🌶️': { name: 'فلفل (نبات)', type: 'P' },
+            '🍤': { name: 'جمبري (حيوان)', type: 'A' }, '🥕': { name: 'جزر (نبات)', type: 'P' },
+            '🐟': { name: 'سمك (حيوان)', type: 'A' }, '🌽': { name: 'ذرة (نبات)', type: 'P' }
+        };
+        
+        const allPlants = ['🍅', '🌶️', '🥕', '🌽'];
+        const allAnimals = ['🐥', '🐂', '🍤', '🐟'];
 
         function add(s) {
             if(past.length >= 4) past.shift();
             past.push(s);
             const nodes = document.getElementById('h-row').children;
             for(let i=0; i<4; i++) nodes[i].innerText = past[i] || "-";
-        }
-
-        function run() {
-            if(past.length < 4) { alert("سجل الماضي غير مكتمل!"); return; }
             
-            // تصفير الخانات
+            // إعادة ضبط الرادار لـ 4 خانات
             for(let i=1; i<=4; i++) {
                 document.getElementById('s'+i).classList.remove('core-active');
+                document.getElementById('b'+i).style.width = '0%';
+                document.getElementById('n'+i).innerText = "---";
+                document.getElementById('i'+i).innerText = "⏳";
             }
+        }
 
+        function runAllEngines() {
+            if(past.length < 4) { alert("⚠️ المبرمج فخامه يخبرك: يجب إدخال 4 نتائج لتعمل المحركات بشكل صحيح!"); return; }
+
+            const hackScreen = document.getElementById('hacking-screen');
+            const hackLog = document.getElementById('hack-log');
+            hackScreen.style.display = 'flex';
+            
+            setTimeout(() => hackLog.innerText = "Applying 60/40 Ratio Protocol...", 500);
+            setTimeout(() => hackLog.innerText = "Targeting High-Value Crops...", 1000);
+            setTimeout(() => hackLog.innerText = "Extracting Unique Targets...", 1500);
+            
             setTimeout(() => {
-                const keys = Object.keys(names);
-                let selected = keys.sort(() => 0.5 - Math.random()).slice(0, 4);
+                hackScreen.style.display = 'none';
+                hackLog.innerText = "Initializing 4 Engines...";
                 
-                selected.forEach((sym, index) => {
-                    let i = index + 1;
-                    document.getElementById('n'+i).innerText = names[sym];
-                    document.getElementById('i'+i).innerText = sym;
+                // ⚙️ هندسة النسبة 60% خضار و 40% لحوم
+                // 60% من الوقت سيختار البرنامج (3 نباتات و 1 حيوان)
+                // 40% من الوقت سيختار (2 نباتات و 2 حيوان)
+                // هذا يضمن أن الغالبية العظمى للنتائج هي خضروات (النباتات) بشكل دائم وموزون!
+                
+                let numPlants = Math.random() < 0.60 ? 3 : 2; 
+                let numAnimals = 4 - numPlants;
+
+                // خلط القوائم لضمان العشوائية وعدم التكرار
+                let shuffledPlants = [...allPlants].sort(() => 0.5 - Math.random());
+                let shuffledAnimals = [...allAnimals].sort(() => 0.5 - Math.random());
+
+                // اختيار العناصر بناءً على العدد المطلوب
+                let pickedPlants = shuffledPlants.slice(0, numPlants);
+                let pickedAnimals = shuffledAnimals.slice(0, numAnimals);
+
+                // دمج الخيارات الأربعة وخلط أماكنها لكي لا تكون النباتات دائماً في الأعلى
+                let finalSelection = [...pickedPlants, ...pickedAnimals].sort(() => 0.5 - Math.random());
+
+                // توليد نسب الثقة للمحركات (أرقام واقعية وقوية)
+                const results = finalSelection.map(sym => {
+                    return {
+                        sym: sym,
+                        conf: Math.floor(Math.random() * (98 - 80 + 1)) + 80
+                    };
                 });
 
-                document.getElementById('s1').classList.add('core-active');
-                document.getElementById('s3').classList.add('core-active');
-            }, 600);
+                // عرض النتائج في الشاشات الأربع
+                results.forEach((r, index) => {
+                    let i = index + 1;
+                    document.getElementById('n'+i).innerText = itemData[r.sym].name;
+                    document.getElementById('i'+i).innerText = r.sym;
+                    document.getElementById('p'+i).innerText = `نسبة الثقة: ${r.conf}%`;
+                    
+                    let slot = document.getElementById('s'+i);
+                    slot.classList.add('core-active');
+                    
+                    setTimeout(() => {
+                        document.getElementById('b'+i).style.width = r.conf + '%';
+                    }, 100);
+                    
+                    // تلوين للضربات الذهبية المرتفعة
+                    if(r.conf >= 90) {
+                        slot.style.border = "2px solid var(--gold)";
+                        slot.style.boxShadow = "inset 0 0 20px rgba(255, 215, 0, 0.2), 0 0 15px var(--gold)";
+                    } else {
+                        slot.style.border = "1px solid var(--green)";
+                        slot.style.boxShadow = "inset 0 0 20px rgba(0, 255, 51, 0.2), 0 0 10px var(--green)";
+                    }
+                });
+
+            }, 2000);
         }
     </script>
 </body>
 </html>
+
