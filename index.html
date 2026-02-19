@@ -3,71 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REKO EMPIRE V56</title>
+    <title>REKO EMPIRE V56 - PRO</title>
     <style>
         :root { --gold: #D4AF37; --cyan: #00f2ff; --green: #00ff41; --red: #ff3e3e; --bg: #010206; }
         body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; padding: 10px; text-align: center; }
 
-        .header { color: var(--cyan); font-size: 10px; border: 1px solid #1a2a4a; padding: 5px; margin-bottom: 15px; border-radius: 5px; letter-spacing: 1px; }
+        /* شاشة تسجيل الدخول */
+        #login-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 85vh; }
+        .login-box { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--cyan); border-radius: 15px; padding: 30px; width: 80%; max-width: 350px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+        .login-title { color: var(--gold); margin-bottom: 5px; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px var(--gold); }
+        .login-desc { color: var(--cyan); font-size: 11px; margin-bottom: 20px; }
+        .sub-input { padding: 15px; border-radius: 10px; border: 1px solid var(--cyan); background: #0a1428; color: var(--gold); width: 85%; margin-bottom: 15px; text-align: center; font-size: 16px; font-weight: bold; outline: none; }
+        .btn-login { background: linear-gradient(to bottom, var(--gold), #8a6e00); border: none; padding: 15px 30px; border-radius: 10px; color: #000; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 0 10px var(--gold); font-size: 16px; }
+        .error-msg { color: var(--red); display: none; margin-top: 15px; font-size: 13px; font-weight: bold; }
 
-        /* 1. خانات الأهداف العلوية (4 خانات - يضوي منها هدفين) */
+        /* واجهة البرنامج الأصلية */
+        #app-container { display: none; }
+        .header { color: var(--cyan); font-size: 11px; border: 1px solid #1a2a4a; padding: 8px; margin-bottom: 15px; border-radius: 5px; letter-spacing: 1px; font-weight: bold; background: rgba(0,0,0,0.5); }
+
         .target-radar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        .t-slot { 
-            background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 12px;
-            height: 55px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px;
-            transition: 0.5s; position: relative;
-        }
-        /* تأثير الهدف الأساسي المشتعل */
+        .t-slot { background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 12px; height: 55px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; transition: 0.5s; position: relative; }
         .t-slot.core-active { background: linear-gradient(90deg, #0a1428, #002200); border: 2px solid var(--green); box-shadow: 0 0 15px var(--green); transform: scale(1.02); }
         .t-slot.core-active::after { content: "هدف أساسي 🎯"; position: absolute; left: 15px; top: 2px; font-size: 8px; color: var(--green); font-weight: bold; }
-        
         .t-icon { font-size: 28px; opacity: 0.1; transition: 0.5s; }
         .core-active .t-icon { opacity: 1; filter: drop-shadow(0 0 8px var(--green)); }
         .t-name { font-weight: bold; color: #444; }
         .core-active .t-name { color: #fff; }
 
-        /* 2. سجل الماضي (4 خانات تسجيل ما حصل) */
         .history-section { background: rgba(0,242,255,0.03); border: 1px solid var(--gold); border-radius: 15px; padding: 10px; margin-bottom: 20px; }
         .h-title { font-size: 10px; color: var(--gold); margin-bottom: 8px; }
         .h-grid { display: flex; justify-content: center; gap: 10px; }
         .h-node { width: 50px; height: 45px; background: #000; border: 1px solid var(--cyan); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
-        /* 3. لوحة الرموز الثمانية */
         .keys-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .k-btn { background: #0a1428; border: 1px solid var(--gold); border-radius: 12px; padding: 15px 0; font-size: 26px; cursor: pointer; }
+        .k-btn { background: #0a1428; border: 1px solid var(--gold); border-radius: 12px; padding: 15px 0; font-size: 26px; cursor: pointer; transition: 0.2s; }
+        .k-btn:active { transform: scale(0.95); background: var(--gold); }
 
         .btn-analyze { background: linear-gradient(to bottom, var(--gold), #8a6e00); border: none; padding: 18px; border-radius: 50px; width: 100%; color: #000; font-weight: bold; font-size: 20px; margin-top: 20px; cursor: pointer; box-shadow: 0 0 20px var(--gold); }
     </style>
 </head>
 <body>
 
-    <div class="header">SYSTEM STATUS: REKO EMPIRE V56 ACTIVE</div>
-
-    <div class="target-radar">
-        <div class="t-slot" id="s1"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 1</span><span class="t-name" id="n1">---</span><div class="t-icon" id="i1">⏳</div></div>
-        <div class="t-slot" id="s2"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 2</span><span class="t-name" id="n2">---</span><div class="t-icon" id="i2">⏳</div></div>
-        <div class="t-slot" id="s3"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 3</span><span class="t-name" id="n3">---</span><div class="t-icon" id="i3">⏳</div></div>
-        <div class="t-slot" id="s4"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 4</span><span class="t-name" id="n4">---</span><div class="t-icon" id="i4">⏳</div></div>
-    </div>
-
-    <div class="history-section">
-        <div class="h-title">سجل ما حصل في الماضي (Last 4)</div>
-        <div class="h-grid" id="h-row">
-            <div class="h-node">-</div><div class="h-node">-</div>
-            <div class="h-node">-</div><div class="h-node">-</div>
+    <div id="login-container">
+        <div class="login-box">
+            <div class="login-title">REKO EMPIRE</div>
+            <div class="login-desc">نظام VIP | يرجى إدخال مفتاح التفعيل</div>
+            <input type="text" id="sub-key" class="sub-input" placeholder="أدخل المفتاح هنا...">
+            <button class="btn-login" onclick="verifyKey()">تفعيل الاشتراك (10 أيام)</button>
+            <div id="login-error" class="error-msg">❌ المفتاح غير صحيح أو منتهي!</div>
         </div>
     </div>
 
-    <div class="keys-grid">
-        <button class="k-btn" onclick="add('🐥')">🐥</button><button class="k-btn" onclick="add('🍅')">🍅</button>
-        <button class="k-btn" onclick="add('🐂')">🐂</button><button class="k-btn" onclick="add('🌶️')">🌶️</button>
-        <button class="k-btn" onclick="add('🍤')">🍤</button><button class="k-btn" onclick="add('🥕')">🥕</button>
-        <button class="k-btn" onclick="add('🐟')">🐟</button><button class="k-btn" onclick="add('🌽')">🌽</button>
+    <div id="app-container">
+        <div class="header" id="header-status">SYSTEM STATUS: CHECKING...</div>
+
+        <div class="target-radar">
+            <div class="t-slot" id="s1"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 1</span><span class="t-name" id="n1">---</span><div class="t-icon" id="i1">⏳</div></div>
+            <div class="t-slot" id="s2"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 2</span><span class="t-name" id="n2">---</span><div class="t-icon" id="i2">⏳</div></div>
+            <div class="t-slot" id="s3"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-weight:bold">هدف 3</span><span class="t-name" id="n3">---</span><div class="t-icon" id="i3">⏳</div></div>
+            <div class="t-slot" id="s4"><span style="background:#fff;color:#000;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:bold">هدف 4</span><span class="t-name" id="n4">---</span><div class="t-icon" id="i4">⏳</div></div>
+        </div>
+
+        <div class="history-section">
+            <div class="h-title">سجل ما حصل في الماضي (Last 4)</div>
+            <div class="h-grid" id="h-row">
+                <div class="h-node">-</div><div class="h-node">-</div>
+                <div class="h-node">-</div><div class="h-node">-</div>
+            </div>
+        </div>
+
+        <div class="keys-grid">
+            <button class="k-btn" onclick="add('🐥')">🐥</button><button class="k-btn" onclick="add('🍅')">🍅</button>
+            <button class="k-btn" onclick="add('🐂')">🐂</button><button class="k-btn" onclick="add('🌶️')">🌶️</button>
+            <button class="k-btn" onclick="add('🍤')">🍤</button><button class="k-btn" onclick="add('🥕')">🥕</button>
+            <button class="k-btn" onclick="add('🐟')">🐟</button><button class="k-btn" onclick="add('🌽')">🌽</button>
+        </div>
+
+        <button class="btn-analyze" onclick="run()">تحليل الهدف الأساسي</button>
     </div>
 
-    <button class="btn-analyze" onclick="run()">تحليل الهدف الأساسي</button>
-
     <script>
+        // === 1. نظام الحماية والاشتراكات ===
+        // يمكنك تغيير هذه المفاتيح لأي كلمات تريدها
+        const validKeys = [
+            "REKO-10D-K1", "REKO-10D-K2", "REKO-10D-K3", "REKO-10D-K4", "REKO-10D-K5",
+            "REKO-10D-K6", "REKO-10D-K7", "REKO-10D-K8", "REKO-10D-K9", "REKO-10D-K10"
+        ];
+        const DURATION_DAYS = 10;
+
+        function checkSubscription() {
+            const savedKey = localStorage.getItem('reko_key');
+            const expireDate = localStorage.getItem('reko_expire');
+
+            if (savedKey && expireDate) {
+                const now = new Date().getTime();
+                if (now < expireDate) {
+                    // الاشتراك ساري
+                    const daysLeft = Math.ceil((expireDate - now) / (1000 * 60 * 60 * 24));
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    document.getElementById('header-status').innerText = `SYSTEM ACTIVE | باقي لاشتراكك: ${daysLeft} يوم`;
+                    return;
+                } else {
+                    // الاشتراك انتهى
+                    localStorage.removeItem('reko_key');
+                    localStorage.removeItem('reko_expire');
+                    alert("⚠️ انتهت صلاحية اشتراكك (10 أيام). يرجى شراء مفتاح جديد.");
+                }
+            }
+            // إظهار شاشة الدخول إذا لم يكن هناك اشتراك
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('app-container').style.display = 'none';
+        }
+
+        function verifyKey() {
+            const input = document.getElementById('sub-key').value.trim();
+            const errorMsg = document.getElementById('login-error');
+
+            if (validKeys.includes(input)) {
+                // تفعيل المفتاح لمدة 10 أيام
+                const expireDate = new Date().getTime() + (DURATION_DAYS * 24 * 60 * 60 * 1000);
+                localStorage.setItem('reko_key', input);
+                localStorage.setItem('reko_expire', expireDate);
+                errorMsg.style.display = 'none';
+                checkSubscription(); // تحديث الواجهة
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // تشغيل فحص الحماية عند فتح الصفحة
+        window.onload = checkSubscription;
+
+        // === 2. نظام التحليل الخاص باللعبة ===
         let past = [];
         const names = {'🐥':'كتكوت','🍅':'طماطم','🐂':'بقر','🌶️':'فلفل','🍤':'جمبري','🥕':'جزر','🐟':'سمك','🌽':'ذرة'};
 
@@ -81,14 +149,13 @@
         function run() {
             if(past.length < 4) { alert("سجل الماضي غير مكتمل!"); return; }
             
-            // تصفير الخانات العلوية
+            // تصفير الخانات
             for(let i=1; i<=4; i++) {
                 document.getElementById('s'+i).classList.remove('core-active');
             }
 
             setTimeout(() => {
                 const keys = Object.keys(names);
-                // اختيار 4 خيارات من العجلة
                 let selected = keys.sort(() => 0.5 - Math.random()).slice(0, 4);
                 
                 selected.forEach((sym, index) => {
@@ -97,7 +164,6 @@
                     document.getElementById('i'+i).innerText = sym;
                 });
 
-                // تفعيل "هدفين أساسيين" (مثلاً الهدف 1 والهدف 3)
                 document.getElementById('s1').classList.add('core-active');
                 document.getElementById('s3').classList.add('core-active');
             }, 600);
@@ -105,4 +171,3 @@
     </script>
 </body>
 </html>
-
